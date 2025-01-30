@@ -9,9 +9,8 @@ import os
 api_key = open('secret.txt').read()
 client = OpenAI(api_key=api_key)
 
-st.set_page_config(page_title="📂 PDF & Voice Analysis Tool", page_icon="🤖", layout="wide")
-st.title("📂 PDF & Voice Analysis Tool")
-st.write("Upload a PDF file and ask questions via voice for AI analysis.")
+st.set_page_config(page_title="FB REAL", page_icon="🏡", layout="wide")
+st.title("📂 ابحث عن عقارك")
 
 if 'pdf_content' not in st.session_state:
     st.session_state.pdf_content = None
@@ -23,18 +22,18 @@ if uploaded_file:
         pdf_content = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
         st.session_state.pdf_content = pdf_content
         
-        st.success("📄 PDF content loaded successfully!")
-        with st.expander("View PDF Content"):
-            st.text_area("PDF Content:", value=pdf_content, height=200)
+        st.success("📄 PDF زبط ياحلو!!")
+        with st.expander("PDF"+"تبي تشوف الـ"):
+            st.text_area("PDF :", value=pdf_content, height=200)
     except Exception as e:
         st.error(f"Error processing PDF: {e}")
 
 if st.session_state.pdf_content:
-    st.markdown("### 🎤 Record Your Question")
-    duration = st.slider("⏳ Recording Duration (seconds):", 1, 30, 5)
+    st.markdown("### 🎤 امرني..وش تبي عقار بس؟")
+    duration = st.slider("⏳ كم ثانية تسولف؟", 1, 30, 5)
 
-    if st.button("🎙️ Start Recording"):
-        st.write("🎤 Recording in progress...")
+    if st.button("🎙️ اضغط عشان اسمعك"):
+        st.write("🎤 جالس اسمعك سولف")
         fs = 44100  
         recording = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='int16')
         sd.wait()  
@@ -46,10 +45,10 @@ if st.session_state.pdf_content:
             wf.setframerate(fs)
             wf.writeframes(recording.tobytes())
         
-        st.success("✅ Recording completed!")
+        st.success("✅ حلوو وضعك تمام للحين")
         st.audio(filename, format="audio/wav")
 
-        st.markdown("### 🎯 Your Question")
+        st.markdown("### 🎯سؤالك هو ..")
         with open(filename, "rb") as audio_file:
             try:
                 transcription = client.audio.transcriptions.create(
@@ -59,7 +58,7 @@ if st.session_state.pdf_content:
                 question = transcription.text
                 st.info(f"🔍 Your question: {question}")
 
-                st.markdown("### 🤖 AI Analysis")
+                st.markdown("### 🤖AI يفكر")
                 with st.spinner("Processing your question..."):
                     response = client.chat.completions.create(
                         model="gpt-4",
@@ -74,7 +73,7 @@ Question: {question}
 Please provide a detailed answer based on the document content."""}
                         ]
                     )
-                    st.markdown("### 🧠 Answer:")
+                    st.markdown("### 🧠 رد FB REAL:")
                     st.write(response.choices[0].message.content)
             except Exception as e:
                 st.error(f"❌ Error: {e}")
@@ -84,4 +83,4 @@ Please provide a detailed answer based on the document content."""}
         except Exception as e:
             st.warning(f"Could not remove temporary audio file: {e}")
 else:
-    st.info("👆 Please upload a PDF file first to proceed with voice questions.")
+    st.info("👆 هنا حمل ملفك ياحلو")
